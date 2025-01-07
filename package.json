@@ -13,7 +13,9 @@
   "dependencies": {
     "@ant-design/x": "^1.0.4",
     "ahooks": "^3.8.4",
+    "axios": "^1.7.9",
     "lodash": "^4.17.21",
+    "openai": "^4.77.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
