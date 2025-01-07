@@ -1,39 +1,46 @@
-import axios from 'axios';
-import { useState } from 'react';
+import { useXAgent } from '@ant-design/x';
+import React from 'react';
 
-const chatWithKimi = async (inputValue: string) => {
-  try {
-    //请求接口这块儿我使用的是axios，你也可以用fetch。
-    const response = await axios.post(
-      `https://ark.cn-beijing.volces.com/api/v3/embeddings`,
-      {
-        model: 'ep-20250107162511-v8v56',
-        // inputValue为用户输入信息
-        input: [inputValue],
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${"979d8be2-9495-41cd-b307-1cbce6428ce4"}`,
-        },
-      }
-    )
-    console.log(
-      'response.data.choices[0].message',
-      response.data
-    )
 
-  } catch (error) {
-    console.error('Error:', error)
-  }
-}
+const MODEL = import.meta.env.VITE_MODEL;
+const API_KEY = import.meta.env.VITE_API_KEY;
+const PATH = import.meta.env.VITE_PATH;
+
 
 function App() {
-  const [inputValue, setInputValue] = useState('');
+  const [agent] = useXAgent<YourMessageType>({
+    baseURL: '/ai' + PATH,
+    model: MODEL,
+    dangerouslyApiKey: 'Bearer ' + API_KEY,
+  });
+
+  async function request() {
+    agent.request(
+      {
+          messages: [{ role: 'system', content: inputValue }],
+          stream: true,
+      },
+      {
+        onSuccess: (messages) => {
+          console.log('onSuccess', messages);
+        },
+        onError: (error) => {
+          console.error('onError', error);
+        },
+        onUpdate: (msg) => {
+          console.log('onUpdate', msg);
+        },
+      },
+    );
+  }
+
+  const [inputValue, setInputValue] = React.useState('');
   return (
     <>
       <input type="text" onChange={(e) => setInputValue(e.target.value)} />
-      <button onClick={() => chatWithKimi(inputValue)}>发送</button>
+      <button onClick={() => request()}>发送</button>
     </>
   );
 }
+
+export default App;
